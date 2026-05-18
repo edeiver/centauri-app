@@ -2,6 +2,20 @@
   "expo": {
     "name": "centauri-app",
     "slug": "centauri-app",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "ios": {
+      "bundleIdentifier": "com.centauri.app"
+    },
+    "android": {
+      "package": "com.centauri.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dcb48eae-bf76-4f44-b8b2-2338c79b1db0"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

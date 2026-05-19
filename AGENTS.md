@@ -24,12 +24,11 @@
   ## Commands
   Preferred:
   - `npx expo start`: Start Expo development server.
-  - `npx expo start --web`: Start web target.
 
   Native (ask first):
   - `npx expo run:ios`: Build and run on iOS Simulator.
   - `npx expo run:android`: Build and run on Android emulator/device.
-  
+
   ## Style
   Use functional components, single quotes, semicolons, `StyleSheet.create`,
   PascalCase components, camelCase variables/functions.

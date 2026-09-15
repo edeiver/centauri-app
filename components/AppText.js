@@ -3,11 +3,18 @@ import { StyleSheet, Text as RNText } from 'react-native';
 
 import { useTheme } from '../theme';
 
-const fontWeights = {
-  regular: 'Roboto_400Regular',
-  medium: 'Roboto_500Medium',
-  bold: 'Roboto_700Bold',
-  light: 'Roboto_300Light',
+const headingWeights = {
+  regular: 'SpaceGrotesk_400Regular',
+  medium: 'SpaceGrotesk_500Medium',
+  semiBold: 'SpaceGrotesk_600SemiBold',
+  bold: 'SpaceGrotesk_700Bold',
+};
+
+const bodyWeights = {
+  regular: 'Geist_400Regular',
+  medium: 'Geist_500Medium',
+  semiBold: 'Geist_600SemiBold',
+  bold: 'Geist_600SemiBold',
 };
 
 export default function AppText({
@@ -24,7 +31,8 @@ export default function AppText({
   const styles = createStyles(theme);
   const typographyStyle = theme.typography[variant] || theme.typography.bodyMd;
   const colorValue = theme.colors[color] || color || theme.colors.text;
-  const fontFamily = weight ? fontWeights[weight] : null;
+  const isHeadingVariant = typographyStyle.fontFamily?.startsWith('SpaceGrotesk');
+  const fontFamily = weight ? (isHeadingVariant ? headingWeights : bodyWeights)[weight] : null;
 
   return (
     <RNText

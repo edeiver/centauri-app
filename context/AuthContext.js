@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 
-import { loginRequest, logoutRequest } from '../api';
+import { loginRequest, logoutRequest, registerRequest } from '../api';
 
 const AuthContext = createContext({
   accessToken: null,
@@ -17,6 +17,7 @@ const AuthContext = createContext({
   loading: false,
   isAuthenticated: false,
   login: async () => {},
+  register: async () => {},
   logout: async () => {},
   setSession: () => {},
   getValidToken: () => null,
@@ -144,6 +145,24 @@ export function AuthProvider({ children }) {
     }
   }, [setSession]);
 
+  const register = useCallback(async ({ name, email, password }) => {
+    setLoading(true);
+
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanName = name.trim();
+
+      if (!cleanName || !cleanEmail || !password) {
+        throw new Error('Completa nombre, correo y contrasena.');
+      }
+
+      const data = await registerRequest({ name: cleanName, email: cleanEmail, password });
+      setSession(getAccessTokenFromResponse(data));
+    } finally {
+      setLoading(false);
+    }
+  }, [setSession]);
+
   const logout = useCallback(async () => {
     const token = session?.accessToken;
     clearSession();
@@ -183,11 +202,12 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: Boolean(session?.accessToken) && !isExpired(session?.expiresAt),
       login,
+      register,
       logout,
       setSession,
       getValidToken,
     }),
-    [getValidToken, initializing, loading, login, logout, session, setSession]
+    [getValidToken, initializing, loading, login, logout, register, session, setSession]
   );
 
   return (

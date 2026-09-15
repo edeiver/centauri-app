@@ -1,5 +1,18 @@
 {
-  "enabledPlugins": {
-    "expo@claude-plugins-official": true
+  "defaultMode": "default",
+  "permissions": {
+    "ask": [
+      "Bash(rm*)",
+      "Bash(git push*)",
+      "Bash(npm install*)",
+      "Bash(npx expo install*)"
+    ],
+    "deny": [
+      "Read(./**/node_modules/**)",
+      "Read(./**/.expo/**)",
+      "Read(./**/dist/**)",
+      "Read(./**/build/**)",
+      "Read(./**/*.lock)"
+    ]
   }
 }

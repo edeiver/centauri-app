@@ -162,7 +162,7 @@ const createStyles = (theme) => StyleSheet.create({
     gap: theme.spacing.sm,
   },
   text: {
-    fontFamily: 'Roboto_700Bold',
+    fontFamily: 'SpaceGrotesk_600SemiBold',
     textAlign: 'center',
   },
   icon: {

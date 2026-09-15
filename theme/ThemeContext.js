@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { darkTheme, lightTheme } from './themes';
@@ -7,19 +7,31 @@ const ThemeContext = createContext({
   theme: darkTheme,
   mode: 'dark',
   colorScheme: 'dark',
+  toggleMode: () => {},
 });
 
 export function ThemeProvider({ children }) {
-  const colorScheme = useColorScheme();
-  const mode = colorScheme === 'light' ? 'light' : 'dark';
+  const systemColorScheme = useColorScheme();
+  // Manual override lets the user flip themes in-app regardless of the
+  // system setting (there is no Settings screen in scope yet to host this).
+  const [override, setOverride] = useState(null);
+  const mode = override || (systemColorScheme === 'light' ? 'light' : 'dark');
+
+  const toggleMode = useCallback(() => {
+    setOverride((current) => {
+      const activeMode = current || (systemColorScheme === 'light' ? 'light' : 'dark');
+      return activeMode === 'light' ? 'dark' : 'light';
+    });
+  }, [systemColorScheme]);
 
   const value = useMemo(
     () => ({
       theme: mode === 'light' ? lightTheme : darkTheme,
       mode,
-      colorScheme: colorScheme || 'dark',
+      colorScheme: mode,
+      toggleMode,
     }),
-    [colorScheme, mode]
+    [mode, toggleMode]
   );
 
   return (

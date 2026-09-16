@@ -25,6 +25,7 @@ language -> toggle currency (USD/COP) and theme (dark/light).
 ![Welcome screen](docs/screenshots/welcome.png)
 
 ### Login / Sign Up
+<!-- Login not yet captured — drop it into docs/screenshots/login.png. -->
 ![Login screen](docs/screenshots/login.png)
 ![Sign up screen](docs/screenshots/signup.png)
 
@@ -74,14 +75,12 @@ no scrolling required.
 
 ## Adding the media
 
-Drop files into these paths and they'll show up above automatically:
-
 ```
-docs/demo.gif
-docs/screenshots/welcome.png
-docs/screenshots/login.png
-docs/screenshots/signup.png
-docs/screenshots/dashboard.png
-docs/screenshots/transactions.png
-docs/screenshots/ai-coach.png
+docs/demo.gif                     ✅
+docs/screenshots/welcome.png      ✅
+docs/screenshots/login.png        — pending
+docs/screenshots/signup.png       ✅
+docs/screenshots/dashboard.png    ✅
+docs/screenshots/transactions.png ✅
+docs/screenshots/ai-coach.png     ✅
 ```

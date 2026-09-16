@@ -1,14 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../theme';
 import AICoachScreen from '../screens/AICoachScreen';
 import DashboardScreen from '../screens/DashboardScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import TransactionsScreen from '../screens/TransactionsScreen';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const TAB_ICONS = {
   Dashboard: { active: 'telescope', inactive: 'telescope-outline' },
@@ -16,7 +19,7 @@ const TAB_ICONS = {
   AICoach: { active: 'sparkles', inactive: 'sparkles-outline' },
 };
 
-export default function AppStack() {
+function AppTabs() {
   const { theme } = useTheme();
   const { t } = useTranslation();
 
@@ -58,5 +61,14 @@ export default function AppStack() {
       <Tab.Screen component={TransactionsScreen} name="Transactions" />
       <Tab.Screen component={AICoachScreen} name="AICoach" />
     </Tab.Navigator>
+  );
+}
+
+export default function AppStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen component={AppTabs} name="Tabs" />
+      <Stack.Screen component={ProfileScreen} name="Profile" options={{ presentation: 'modal' }} />
+    </Stack.Navigator>
   );
 }

@@ -315,9 +315,14 @@ export default function DashboardScreen({ navigation }) {
                 <View style={[styles.notificationDot, { backgroundColor: theme.colors.error }]} />
               ) : null}
             </Pressable>
-            <View style={[styles.avatar, { backgroundColor: theme.colors.primaryContainer }]}>
+            <Pressable
+              accessibilityLabel={t('profile.title')}
+              accessibilityRole="button"
+              onPress={() => navigation.navigate('Profile')}
+              style={[styles.avatar, { backgroundColor: theme.colors.primaryContainer }]}
+            >
               <Ionicons color={theme.colors.onPrimary} name="person" size={18} />
-            </View>
+            </Pressable>
           </View>
         </View>
 

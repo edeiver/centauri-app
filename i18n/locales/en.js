@@ -1,6 +1,8 @@
 export default {
   common: {
     retry: 'Retry',
+    cancel: 'Cancel',
+    close: 'Close',
     diagnosticFallback: 'Diagnostic',
   },
   nav: {
@@ -56,10 +58,10 @@ export default {
     usernameLabel: 'Username',
     usernameHint: 'ID',
     usernameHelper: '3-30 characters: letters, numbers, or underscore',
-    usernamePlaceholder: 'valeria_morales',
+    usernamePlaceholder: 'nova_traveler',
     emailLabel: 'Email',
     emailHint: 'Secure frequency',
-    emailPlaceholder: 'valeria@universe.io',
+    emailPlaceholder: 'nova@universe.io',
     passwordLabel: 'Create password',
     passwordPlaceholder: 'Minimum 8 alphanumeric characters',
     strengthTitle: 'Orbital Strength',
@@ -162,6 +164,13 @@ export default {
     sectionWarningsTitle: 'Alerts',
     sectionWarningsSubtitle: 'Friction points that deserve your attention',
     sessionExpired: 'Your orbital session expired. Log in again.',
+  },
+  profile: {
+    title: 'Profile',
+    noEmail: 'Signed in',
+    logout: 'Log out',
+    logoutConfirmTitle: 'Log out?',
+    logoutConfirmBody: "You'll need to sign in again to see your data.",
   },
   pinSetup: {
     eyebrow: 'Secure orbit',

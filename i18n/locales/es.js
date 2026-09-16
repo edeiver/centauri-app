@@ -1,6 +1,8 @@
 export default {
   common: {
     retry: 'Reintentar',
+    cancel: 'Cancelar',
+    close: 'Cerrar',
     diagnosticFallback: 'Diagnóstico',
   },
   nav: {
@@ -56,10 +58,10 @@ export default {
     usernameLabel: 'Nombre de usuario',
     usernameHint: 'Identificador',
     usernameHelper: '3-30 caracteres: letras, números o guion bajo',
-    usernamePlaceholder: 'valeria_morales',
+    usernamePlaceholder: 'nova_traveler',
     emailLabel: 'Correo electrónico',
     emailHint: 'Frecuencia segura',
-    emailPlaceholder: 'valeria@universo.io',
+    emailPlaceholder: 'nova@universo.io',
     passwordLabel: 'Crear contraseña',
     passwordPlaceholder: 'Mínimo 8 caracteres alfanuméricos',
     strengthTitle: 'Fuerza Orbital',
@@ -162,6 +164,13 @@ export default {
     sectionWarningsTitle: 'Alertas',
     sectionWarningsSubtitle: 'Fricciones que merecen tu atención',
     sessionExpired: 'Tu sesión orbital expiró. Vuelve a iniciar sesión.',
+  },
+  profile: {
+    title: 'Perfil',
+    noEmail: 'Sesión iniciada',
+    logout: 'Cerrar sesión',
+    logoutConfirmTitle: '¿Cerrar sesión?',
+    logoutConfirmBody: 'Vas a tener que volver a iniciar sesión para ver tus datos.',
   },
   pinSetup: {
     eyebrow: 'Órbita segura',

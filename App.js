@@ -12,10 +12,13 @@ import {
   Geist_600SemiBold,
 } from '@expo-google-fonts/geist';
 
+import './i18n';
+
 import { AuthProvider } from './context/AuthContext';
+import { BudgetProvider } from './context/BudgetContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import AppNavigator from './navigation/AppNavigator';
 import { ThemeProvider } from './theme';
-import { KeyboardProvider } from "react-native-keyboard-controller";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -35,9 +38,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <KeyboardProvider>
-          <AppNavigator />
-        </KeyboardProvider>
+        <CurrencyProvider>
+          <BudgetProvider>
+            <AppNavigator />
+          </BudgetProvider>
+        </CurrencyProvider>
       </AuthProvider>
     </ThemeProvider>
   );

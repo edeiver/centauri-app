@@ -1,15 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { PlaceholderScreen } from '../components';
 
 export default function PinSetupScreen({ navigation }) {
+  const { t } = useTranslation();
+
   return (
     <PlaceholderScreen
-      actionLabel="Volver"
-      eyebrow="Órbita segura"
+      actionLabel={t('pinSetup.back')}
+      eyebrow={t('pinSetup.eyebrow')}
       onAction={() => navigation.goBack()}
-      subtitle="El PIN local todavía no tiene un endpoint de respaldo definido en el backend — pendiente de confirmar el enfoque antes de construir esta pantalla."
-      title="Crea tu Clave Orbital"
+      subtitle={t('pinSetup.subtitle')}
+      title={t('pinSetup.title')}
     />
   );
 }

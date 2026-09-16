@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { Image, StyleSheet, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '../theme';
@@ -58,63 +58,24 @@ const AppTextInput = forwardRef(function AppTextInput({
   ...inputProps
 }, ref) {
   const { theme } = useTheme();
-  const containerRef = useRef(null);
-  const focusedRef = useRef(false);
+  const [focused, setFocused] = useState(false);
   const activeColor = getColor(theme, highlightColor) || getVariantColor(theme, variant);
   const hasError = Boolean(error);
   const dynamicStyles = createDynamicStyles(theme, {
     activeColor,
     disabled,
-    focused: focusedRef.current,
+    focused,
     hasError,
     highlightOnFocus,
   });
 
-  const setInputContainerStyle = (style) => {
-    containerRef.current?.setNativeProps?.({ style });
-  };
-
-  const applyFocusStyle = () => {
-    if (!highlightOnFocus || disabled || hasError) {
-      return;
-    }
-
-    setInputContainerStyle({
-      borderColor: activeColor,
-      shadowColor: activeColor,
-      shadowOpacity: 0.22,
-      shadowRadius: 4,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      elevation: 1,
-    });
-  };
-
-  const applyBlurStyle = () => {
-    setInputContainerStyle({
-      borderColor: hasError ? theme.colors.error : theme.colors.border,
-      shadowColor: 'transparent',
-      shadowOpacity: 0,
-      shadowRadius: 0,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      elevation: 0,
-    });
-  };
-
   const handleFocus = (event) => {
-    focusedRef.current = true;
-    applyFocusStyle();
+    setFocused(true);
     onFocus?.(event);
   };
 
   const handleBlur = (event) => {
-    focusedRef.current = false;
-    applyBlurStyle();
+    setFocused(false);
     onBlur?.(event);
   };
 
@@ -132,7 +93,6 @@ const AppTextInput = forwardRef(function AppTextInput({
       ) : null}
 
       <View
-        ref={containerRef}
         style={[styles.inputContainer, dynamicStyles.inputContainer, inputContainerStyle]}
       >
         <InputAdornment
@@ -223,20 +183,16 @@ function createDynamicStyles(theme, {
       gap: theme.spacing.sm,
       borderRadius: theme.borderRadius.sm,
       paddingHorizontal: theme.spacing.md,
+      // Only borderColor reacts to focus here. RN's New Architecture has a
+      // confirmed regression (facebook/react-native#45798) where toggling
+      // shadowColor/elevation on a View wrapping a focused TextInput fires
+      // an immediate spurious blur — so those props must stay static.
       borderColor: hasError
         ? theme.colors.error
         : shouldHighlight
           ? activeColor
           : theme.colors.border,
       backgroundColor: disabled ? theme.colors.surfaceContainer : theme.colors.surface,
-      shadowColor: shouldHighlight ? activeColor : 'transparent',
-      shadowOpacity: shouldHighlight ? 0.22 : 0,
-      shadowRadius: shouldHighlight ? 4 : 0,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
-      elevation: shouldHighlight ? 1 : 0,
       opacity: disabled ? 0.65 : 1,
     },
     input: {

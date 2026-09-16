@@ -1,30 +1,47 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppText, AppTextInput, Button, CentauriMark, Checkbox, ThemeToggleButton } from '../components';
+import {
+  AppText,
+  AppTextInput,
+  Button,
+  CentauriMark,
+  Checkbox,
+  LanguageToggleButton,
+  ThemeToggleButton,
+} from '../components';
 import { useAuth } from '../context/AuthContext';
 import { createDevAccessToken } from '../context/devSession';
 import { useTheme } from '../theme';
 
 export default function LoginScreen({ navigation }) {
-  const { login, loading, setSession } = useAuth();
+  const { login, setSession } = useAuth();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createStyles(theme);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [rememberSession, setRememberSession] = useState(false);
+  // Defaults to on so a normal login persists across reloads/relaunches
+  // without the user having to remember to opt in; unchecking it keeps the
+  // session in-memory only, for shared/public devices.
+  const [rememberSession, setRememberSession] = useState(true);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleLogin = async () => {
     setError('');
+    setSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login({ username, password, remember: rememberSession });
     } catch (loginError) {
       setError(loginError.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -32,6 +49,7 @@ export default function LoginScreen({ navigation }) {
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.topRow}>
+          <LanguageToggleButton />
           <ThemeToggleButton />
         </View>
 
@@ -41,39 +59,48 @@ export default function LoginScreen({ navigation }) {
 
         <View style={styles.chip}>
           <View style={[styles.dot, { backgroundColor: theme.colors.accent }]} />
-          <AppText color="accent" variant="labelSm">Órbita segura</AppText>
+          <AppText color="accent" variant="labelSm">{t('login.orbitSecure')}</AppText>
         </View>
 
-        <AppText align="center" variant="headlineLg" weight="bold">Centauri</AppText>
-        <AppText align="center" color="accent" variant="labelMd">Tu universo financiero</AppText>
+        <AppText align="center" variant="headlineLg" weight="bold">{t('login.brand')}</AppText>
+        <AppText align="center" color="accent" variant="labelMd">{t('login.tagline')}</AppText>
 
         <View style={styles.introBox}>
           <AppText align="center" color="textMuted" variant="bodySm">
-            Hola de nuevo, viajero. Ingresa para sincronizar tus finanzas.
+            {t('login.welcomeBack')}
           </AppText>
         </View>
 
         <View style={styles.panel}>
           <AppTextInput
             autoCapitalize="none"
-            disabled={loading}
-            keyboardType="email-address"
-            label="Correo electrónico"
-            labelRight={<AppText color="textMuted" variant="labelSm">Identificador estelar</AppText>}
-            leftIcon={<Ionicons color={theme.colors.textMuted} name="at" size={16} />}
-            onChangeText={setEmail}
-            placeholder="comandante@centauri.space"
-            value={email}
+            autoComplete="off"
+            autoCorrect={false}
+            disabled={submitting}
+            keyboardType="default"
+            label={t('login.usernameLabel')}
+            labelRight={<AppText color="textMuted" variant="labelSm">{t('login.usernameHint')}</AppText>}
+            leftIcon={<Ionicons color={theme.colors.textMuted} name="person" size={16} />}
+            onChangeText={setUsername}
+            placeholder={t('login.usernamePlaceholder')}
+            spellCheck={false}
+            textContentType="none"
+            value={username}
           />
 
           <AppTextInput
             autoCapitalize="none"
-            disabled={loading}
-            label="Contraseña"
-            labelRight={<AppText color="primary" variant="labelSm">¿Olvidaste tu clave?</AppText>}
+            autoComplete="off"
+            autoCorrect={false}
+            disabled={submitting}
+            keyboardType="default"
+            label={t('login.passwordLabel')}
+            labelRight={<AppText color="primary" variant="labelSm">{t('login.forgotPassword')}</AppText>}
             leftIcon={<Ionicons color={theme.colors.textMuted} name="lock-closed" size={16} />}
             onChangeText={setPassword}
-            placeholder="Ingresa tu contraseña"
+            placeholder={t('login.passwordPlaceholder')}
+            spellCheck={false}
+            textContentType="none"
             rightIcon={(
               <Pressable onPress={() => setPasswordVisible((value) => !value)}>
                 <Ionicons
@@ -90,13 +117,13 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.rememberRow}>
             <Checkbox
               checked={rememberSession}
-              label="Recordar sesión"
+              label={t('login.rememberSession')}
               onToggle={setRememberSession}
               style={styles.rememberCheckbox}
             />
             <View style={styles.encryptedChip}>
               <Ionicons color={theme.colors.accent} name="ellipse" size={6} />
-              <AppText color="textMuted" variant="labelSm">Encriptado 256-bit</AppText>
+              <AppText color="textMuted" variant="labelSm">{t('login.encrypted')}</AppText>
             </View>
           </View>
 
@@ -104,19 +131,25 @@ export default function LoginScreen({ navigation }) {
             <AppText color="error" variant="bodySm">{error}</AppText>
           ) : null}
 
+          {submitting ? (
+            <AppText color="textMuted" variant="bodySm">
+              {t('login.syncing')}
+            </AppText>
+          ) : null}
+
           <Button
             fullWidth
-            loading={loading}
+            loading={submitting}
             onPress={handleLogin}
             rightIcon={<Ionicons color={theme.colors.onPrimary} name="arrow-forward" size={18} />}
-            title="Iniciar sesión"
+            title={t('login.submit')}
           />
 
           {__DEV__ ? (
             <Button
               fullWidth
               onPress={() => setSession(createDevAccessToken())}
-              title="[DEV] Entrar sin backend"
+              title={t('login.devBypass')}
               variant="ghost"
             />
           ) : null}
@@ -125,14 +158,14 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.statusChip}>
           <Ionicons color={theme.colors.accent} name="ellipse" size={6} />
           <AppText color="textMuted" numberOfLines={1} style={styles.statusText} variant="bodySm">
-            Nodo Alfa Centauri sincronizado y seguro
+            {t('login.statusNode')}
           </AppText>
         </View>
 
         <View style={styles.signUpRow}>
-          <AppText color="textMuted" variant="bodySm">¿Nuevo en Centauri? </AppText>
+          <AppText color="textMuted" variant="bodySm">{t('login.noAccount')}</AppText>
           <AppText color="accent" onPress={() => navigation.navigate('SignUp')} variant="bodySm" weight="semiBold">
-            Crear cuenta
+            {t('login.createAccount')}
           </AppText>
         </View>
       </ScrollView>
@@ -153,6 +186,7 @@ const createStyles = (theme) => StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
     marginTop: theme.spacing.sm,
   },
   markRow: {

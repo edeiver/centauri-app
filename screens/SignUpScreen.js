@@ -1,48 +1,71 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppText, AppTextInput, Button, CentauriMark, Checkbox, ThemeToggleButton } from '../components';
+import {
+  AppText,
+  AppTextInput,
+  Button,
+  CentauriMark,
+  Checkbox,
+  LanguageToggleButton,
+  ThemeToggleButton,
+} from '../components';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../theme';
 
-function getPasswordStrength(password) {
+// Mirrors centauri-ai-backend's auth.controller.js validateRegisterPayload.
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
+
+function getPasswordStrength(password, t) {
   let score = 0;
 
   if (password.length >= 8) score += 1;
   if (/[A-Z]/.test(password)) score += 1;
   if (/[0-9]/.test(password)) score += 1;
 
-  if (score <= 1) return { label: 'En reposo', pct: password ? 15 : 0, color: 'error' };
-  if (score === 2) return { label: 'Estable', pct: 60, color: 'accent' };
-  return { label: 'Óptima', pct: 100, color: 'success' };
+  if (score <= 1) return { label: t('signup.strengthRest'), pct: password ? 15 : 0, color: 'error' };
+  if (score === 2) return { label: t('signup.strengthStable'), pct: 60, color: 'accent' };
+  return { label: t('signup.strengthOptimal'), pct: 100, color: 'success' };
 }
 
 export default function SignUpScreen({ navigation }) {
-  const { register, loading } = useAuth();
+  const { register } = useAuth();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = createStyles(theme);
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState('');
-  const strength = useMemo(() => getPasswordStrength(password), [password]);
+  const [submitting, setSubmitting] = useState(false);
+  const strength = useMemo(() => getPasswordStrength(password, t), [password, t]);
 
   const handleRegister = async () => {
     setError('');
 
-    if (!acceptedTerms) {
-      setError('Acepta los términos para continuar.');
+    if (!USERNAME_REGEX.test(username)) {
+      setError(t('signup.errorUsername'));
       return;
     }
 
+    if (!acceptedTerms) {
+      setError(t('signup.errorTerms'));
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
-      await register({ name, email, password });
+      await register({ username, email, password });
     } catch (registerError) {
       setError(registerError.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -50,6 +73,7 @@ export default function SignUpScreen({ navigation }) {
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.topRow}>
+          <LanguageToggleButton />
           <ThemeToggleButton />
         </View>
 
@@ -60,47 +84,62 @@ export default function SignUpScreen({ navigation }) {
         <View style={styles.chip}>
           <Ionicons color={theme.colors.accent} name="ellipse" size={6} />
           <AppText color="accent" numberOfLines={1} style={styles.chipText} variant="labelSm">
-            Registro de misión personal
+            {t('signup.missionRegistration')}
           </AppText>
         </View>
 
-        <AppText align="center" variant="headlineLg" weight="bold">Empieza tu despegue</AppText>
+        <AppText align="center" variant="headlineLg" weight="bold">{t('signup.title')}</AppText>
         <AppText align="center" color="textMuted" style={styles.subtitle} variant="bodyMd">
-          Tus cuentas claras y protegidas desde el primer día en la constelación Centauri.
+          {t('signup.subtitle')}
         </AppText>
 
         <View style={styles.panel}>
           <AppTextInput
-            autoCapitalize="words"
-            disabled={loading}
-            label="Nombre completo"
-            labelRight={<AppText color="textMuted" variant="labelSm">Identificador</AppText>}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
+            disabled={submitting}
+            helperText={t('signup.usernameHelper')}
+            keyboardType="default"
+            label={t('signup.usernameLabel')}
+            labelRight={<AppText color="textMuted" variant="labelSm">{t('signup.usernameHint')}</AppText>}
             leftIcon={<Ionicons color={theme.colors.textMuted} name="person" size={16} />}
-            onChangeText={setName}
-            placeholder="Valeria Morales"
-            value={name}
+            onChangeText={setUsername}
+            placeholder={t('signup.usernamePlaceholder')}
+            spellCheck={false}
+            textContentType="none"
+            value={username}
           />
 
           <AppTextInput
             autoCapitalize="none"
-            disabled={loading}
+            autoComplete="off"
+            autoCorrect={false}
+            disabled={submitting}
             keyboardType="email-address"
-            label="Correo electrónico"
-            labelRight={<AppText color="textMuted" variant="labelSm">Frecuencia segura</AppText>}
+            label={t('signup.emailLabel')}
+            labelRight={<AppText color="textMuted" variant="labelSm">{t('signup.emailHint')}</AppText>}
             leftIcon={<Ionicons color={theme.colors.textMuted} name="at" size={16} />}
             onChangeText={setEmail}
-            placeholder="valeria@universo.io"
+            placeholder={t('signup.emailPlaceholder')}
+            spellCheck={false}
+            textContentType="none"
             value={email}
           />
 
           <AppTextInput
             autoCapitalize="none"
-            disabled={loading}
-            label="Crear contraseña"
+            autoComplete="off"
+            autoCorrect={false}
+            disabled={submitting}
+            keyboardType="default"
+            label={t('signup.passwordLabel')}
             labelRight={<AppText color={strength.color} variant="labelSm">{strength.label}</AppText>}
             leftIcon={<Ionicons color={theme.colors.textMuted} name="key" size={16} />}
             onChangeText={setPassword}
-            placeholder="Mínimo 8 caracteres alfanuméricos"
+            placeholder={t('signup.passwordPlaceholder')}
+            spellCheck={false}
+            textContentType="none"
             rightIcon={(
               <Pressable onPress={() => setPasswordVisible((value) => !value)}>
                 <Ionicons
@@ -116,7 +155,7 @@ export default function SignUpScreen({ navigation }) {
 
           <View style={styles.strengthBox}>
             <View style={styles.strengthHeaderRow}>
-              <AppText color="textMuted" variant="labelSm">Fuerza Orbital</AppText>
+              <AppText color="textMuted" variant="labelSm">{t('signup.strengthTitle')}</AppText>
               <AppText color={strength.color} variant="labelSm">{strength.pct}%</AppText>
             </View>
             <View style={styles.strengthTrack}>
@@ -128,13 +167,13 @@ export default function SignUpScreen({ navigation }) {
               />
             </View>
             <AppText color="textMuted" variant="bodySm">
-              Combina símbolos estelares, números y mayúsculas.
+              {t('signup.strengthHint')}
             </AppText>
           </View>
 
           <Checkbox
             checked={acceptedTerms}
-            label="Acepto los Términos del Servicio y la Política de Privacidad. Mis datos están cifrados de extremo a extremo."
+            label={t('signup.terms')}
             onToggle={setAcceptedTerms}
           />
 
@@ -142,26 +181,32 @@ export default function SignUpScreen({ navigation }) {
             <AppText color="error" variant="bodySm">{error}</AppText>
           ) : null}
 
+          {submitting ? (
+            <AppText color="textMuted" variant="bodySm">
+              {t('signup.creating')}
+            </AppText>
+          ) : null}
+
           <Button
             fullWidth
-            loading={loading}
+            loading={submitting}
             onPress={handleRegister}
             rightIcon={<Ionicons color={theme.colors.onPrimary} name="rocket" size={18} />}
-            title="Crear mi universo Centauri"
+            title={t('signup.submit')}
           />
         </View>
 
         <View style={styles.footerRow}>
           <Ionicons color={theme.colors.accent} name="shield-checkmark" size={14} />
           <AppText color="textMuted" style={styles.footerText} variant="bodySm">
-            Cifrado cuántico de grado financiero 256-bit
+            {t('signup.encryptedFooter')}
           </AppText>
         </View>
 
         <View style={styles.loginRow}>
-          <AppText color="textMuted" variant="bodySm">¿Ya tienes coordenadas en órbita? </AppText>
+          <AppText color="textMuted" variant="bodySm">{t('signup.haveAccount')}</AppText>
           <AppText color="accent" onPress={() => navigation.navigate('Login')} variant="bodySm" weight="semiBold">
-            Iniciar sesión
+            {t('signup.login')}
           </AppText>
         </View>
       </ScrollView>
@@ -182,6 +227,7 @@ const createStyles = (theme) => StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
     marginTop: theme.spacing.sm,
   },
   markRow: {

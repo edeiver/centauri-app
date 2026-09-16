@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/
 import { StatusBar } from 'expo-status-bar';
 import React, { useMemo } from 'react';
 
+import { BudgetPromptModal } from '../components';
 import LoadingScreen from '../components/LoadingScreen';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../theme';
@@ -31,6 +32,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer theme={navigationTheme}>
       {initializing ? <LoadingScreen /> : isAuthenticated ? <AppStack /> : <AuthStack />}
+      {isAuthenticated ? <BudgetPromptModal /> : null}
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
     </NavigationContainer>
   );

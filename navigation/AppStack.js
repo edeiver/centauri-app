@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../theme';
 import AICoachScreen from '../screens/AICoachScreen';
@@ -10,19 +11,20 @@ import TransactionsScreen from '../screens/TransactionsScreen';
 const Tab = createBottomTabNavigator();
 
 const TAB_ICONS = {
-  Dashboard: { active: 'sparkles', inactive: 'sparkles-outline' },
+  Dashboard: { active: 'telescope', inactive: 'telescope-outline' },
   Transactions: { active: 'planet', inactive: 'planet-outline' },
-  AICoach: { active: 'hardware-chip', inactive: 'hardware-chip-outline' },
-};
-
-const TAB_LABELS = {
-  Dashboard: 'Inicio',
-  Transactions: 'Órbitas',
-  AICoach: 'AI Coach',
+  AICoach: { active: 'sparkles', inactive: 'sparkles-outline' },
 };
 
 export default function AppStack() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
+
+  const tabLabels = {
+    Dashboard: t('nav.dashboard'),
+    Transactions: t('nav.transactions'),
+    AICoach: t('nav.aiCoach'),
+  };
 
   return (
     <Tab.Navigator
@@ -42,7 +44,7 @@ export default function AppStack() {
           ...theme.typography.labelSm,
           textTransform: 'none',
         },
-        tabBarLabel: TAB_LABELS[route.name],
+        tabBarLabel: tabLabels[route.name],
         tabBarIcon: ({ focused, color, size }) => (
           <Ionicons
             color={color}

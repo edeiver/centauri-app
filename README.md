@@ -86,6 +86,20 @@ reimplements backend logic, it only consumes it.
   </tr>
 </table>
 
+Every screen also fully supports light mode, toggled live and persisted
+across restarts:
+
+<table>
+  <tr>
+    <td align="center"><b>Welcome (light)</b></td>
+    <td align="center"><b>Login (light)</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/welcome-light.png" width="280" /></td>
+    <td><img src="docs/screenshots/login-light.png" width="280" /></td>
+  </tr>
+</table>
+
 **Dashboard** — balance overview, planetary spending visualization, budget
 cycle progress, month-over-month expense trend, and the AI proactive-alert
 card (tappable, jumps into AI Coach).
